@@ -1,5 +1,6 @@
 package gregtech.api.capability.impl;
 
+import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
 import gregtech.api.capability.IEnergyContainer;
@@ -32,9 +33,11 @@ public class EnergyContainerHandler extends MTETrait implements IEnergyContainer
     private Predicate<EnumFacing> sideInputCondition;
     private Predicate<EnumFacing> sideOutputCondition;
 
+    private int timer = 0;
+
     public EnergyContainerHandler(MetaTileEntity tileEntity, long maxCapacity, long maxInputVoltage, long maxInputAmperage, long maxOutputVoltage, long maxOutputAmperage) {
         super(tileEntity);
-        this.maxCapacity = maxCapacity;
+        this.maxCapacity = maxCapacity << GTValues.RF;
         this.maxInputVoltage = maxInputVoltage;
         this.maxInputAmperage = maxInputAmperage;
         this.maxOutputVoltage = maxOutputVoltage;
@@ -111,7 +114,11 @@ public class EnergyContainerHandler extends MTETrait implements IEnergyContainer
     public void update() {
         if (getMetaTileEntity().getWorld().isRemote)
             return;
-        if(getEnergyStored() >= getOutputVoltage() && getOutputVoltage() > 0 && getOutputAmperage() > 0) {
+        // every (1 << GTValues.RF) tick emit (1 << GTValues.RF) unit energy
+        if (((timer ++) & ((1 << GTValues.RF) - 1)) != 0) {
+            return ;
+        }
+        if(getEnergyStored() >= getOutputVoltage() * (getOutputAmperage() << GTValues.RF) && getOutputVoltage() > 0 && getOutputAmperage() > 0) {
             long outputVoltage = getOutputVoltage();
             long outputAmperes = Math.min(getEnergyStored() / outputVoltage, getOutputAmperage());
             if(outputAmperes == 0) return;
@@ -128,7 +135,7 @@ public class EnergyContainerHandler extends MTETrait implements IEnergyContainer
                 }
             }
             if(amperesUsed > 0) {
-                setEnergyStored(getEnergyStored() - amperesUsed * outputVoltage);
+                setEnergyStored(getEnergyStored() - amperesUsed * (outputVoltage << GTValues.RF));
             }
         }
     }
@@ -146,9 +153,9 @@ public class EnergyContainerHandler extends MTETrait implements IEnergyContainer
                 return Math.min(amperage, getInputAmperage());
             }
             if(canAccept >= voltage) {
-                long amperesAccepted = Math.min(canAccept / voltage, Math.min(amperage, getInputAmperage()));
+                long amperesAccepted = Math.min(canAccept / (voltage << GTValues.RF), Math.min(amperage, getInputAmperage() << GTValues.RF));
                 if(amperesAccepted > 0) {
-                    setEnergyStored(getEnergyStored() + voltage * amperesAccepted);
+                    setEnergyStored(getEnergyStored() + voltage * (amperesAccepted << GTValues.RF));
                     return amperesAccepted;
                 }
             }

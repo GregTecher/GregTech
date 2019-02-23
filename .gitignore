@@ -5,6 +5,10 @@
 thumbs.db
 *.db
 
+### macOS ###
+
+.DS_Store
+
 ### Java ###
 
 *.class

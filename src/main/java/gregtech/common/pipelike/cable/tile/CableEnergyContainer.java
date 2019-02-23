@@ -1,5 +1,6 @@
 package gregtech.common.pipelike.cable.tile;
 
+import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.pipenet.tile.IPipeTile;
 import gregtech.common.pipelike.cable.Insulation;

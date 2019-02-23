@@ -28,6 +28,10 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
 
     private final int tier;
 
+    private int timer = 0;
+
+    private int last = 0;
+
     public EnergyContainerBatteryBuffer(MetaTileEntity metaTileEntity, int tier) {
         super(metaTileEntity);
         this.tier = tier;
@@ -48,12 +52,28 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
                 return Math.min(amperage, getInputAmperage());
             }
             IItemHandlerModifiable inventory = getInventory();
+//            boolean full = true;
+//            int inventorySize = inventory.getSlots();
+//            int count = 0;
+//            while (amperage != 0) {
+//                if (count)
+//                ItemStack batteryStack = inventory.getStackInSlot(last);
+//                IElectricItem electricItem = getBatteryContainer(batteryStack);
+//                if (electricItem == null) continue;
+//                if(electricItem.charge(voltage << GTValues.RF, getTier(), true, true) == voltage << GTValues.RF) {
+//                    electricItem.charge(voltage << GTValues.RF, getTier(), true, false);
+//                    inventory.setStackInSlot(last, batteryStack);
+//                    full = false;
+//                }
+//                last = (last + 1) % inventorySize;
+//                count ++;
+//            }
             for (int i = 0; i < inventory.getSlots(); i++) {
                 ItemStack batteryStack = inventory.getStackInSlot(i);
                 IElectricItem electricItem = getBatteryContainer(batteryStack);
                 if (electricItem == null) continue;
-                if(electricItem.charge(voltage, getTier(), true, true) == voltage) {
-                    electricItem.charge(voltage, getTier(), true, false);
+                if(electricItem.charge(voltage << GTValues.RF, getTier(), true, true) == voltage << GTValues.RF) {
+                    electricItem.charge(voltage << GTValues.RF, getTier(), true, false);
                     inventory.setStackInSlot(i, batteryStack);
                     if(--amperage == 0) break;
                 }
@@ -65,6 +85,10 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
     @Override
     public void update() {
         if(!metaTileEntity.getWorld().isRemote) {
+            // every (1 << GTValues.RF) tick emit (1 << GTValues.RF) unit energyS
+            if (((timer ++) & ((1 << GTValues.RF) - 1)) != 0) {
+                return ;
+            }
             EnumFacing outFacing = metaTileEntity.getFrontFacing();
             TileEntity tileEntity = metaTileEntity.getWorld().getTileEntity
                 (metaTileEntity.getPos().offset(outFacing));
@@ -75,24 +99,25 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
             IItemHandlerModifiable inventory = getInventory();
             long voltage = getOutputVoltage();
             long maxAmperage = 0L;
-            TIntList slotsList = new TIntArrayList();
+            int[] validSlots = new int[16];
             for (int i = 0; i < inventory.getSlots(); i++) {
                 ItemStack batteryStack = inventory.getStackInSlot(i);
                 IElectricItem electricItem = getBatteryContainer(batteryStack);
                 if (electricItem == null) continue;
-                if(electricItem.discharge(voltage, getTier(), true, true, true) == voltage) {
-                    slotsList.add(i);
+                if(electricItem.discharge(voltage << GTValues.RF, getTier(), true, true, true) == voltage << GTValues.RF) {
+                    validSlots[(int) maxAmperage] = i;
                     maxAmperage++;
                 }
             }
             if(maxAmperage == 0) return;
             long amperageUsed = energyContainer.acceptEnergyFromNetwork(outFacing.getOpposite(), voltage, maxAmperage);
             if(amperageUsed == 0) return;
-            for (int i : slotsList.toArray()) {
+            for (int k = 0; k < maxAmperage; k++) {
+                int i = validSlots[k];
                 ItemStack batteryStack = inventory.getStackInSlot(i);
                 IElectricItem electricItem = getBatteryContainer(batteryStack);
                 if (electricItem == null) continue;
-                electricItem.discharge(voltage, getTier(), true, true, false);
+                electricItem.discharge(voltage << GTValues.RF, getTier(), true, true, false);
                 inventory.setStackInSlot(i, batteryStack);
                 if(--amperageUsed == 0) break;
             }
