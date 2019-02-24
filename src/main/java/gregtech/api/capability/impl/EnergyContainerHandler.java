@@ -37,7 +37,7 @@ public class EnergyContainerHandler extends MTETrait implements IEnergyContainer
 
     public EnergyContainerHandler(MetaTileEntity tileEntity, long maxCapacity, long maxInputVoltage, long maxInputAmperage, long maxOutputVoltage, long maxOutputAmperage) {
         super(tileEntity);
-        this.maxCapacity = maxCapacity << GTValues.RF;
+        this.maxCapacity = maxCapacity << (GTValues.RF - 1);
         this.maxInputVoltage = maxInputVoltage;
         this.maxInputAmperage = maxInputAmperage;
         this.maxOutputVoltage = maxOutputVoltage;

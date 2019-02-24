@@ -54,6 +54,7 @@ public class MetaTileEntityPump extends TieredMetaTileEntity {
     private boolean initializedQueue = false;
     private int pumpHeadY;
 
+
     public MetaTileEntityPump(String metaTileEntityId, int tier) {
         super(metaTileEntityId, tier);
     }
@@ -226,6 +227,7 @@ public class MetaTileEntityPump extends TieredMetaTileEntity {
         }
         pushFluidsIntoNearbyHandlers(getFrontFacing());
         fillContainerFromInternalTank(importItems, exportItems, 0, 0);
+
         updateQueueState();
         if(getTimer() % getPumpingCycleLength() == 0 && !fluidSourceBlocks.isEmpty() &&
             energyContainer.getEnergyStored() >= GTValues.V[getTier()]) {

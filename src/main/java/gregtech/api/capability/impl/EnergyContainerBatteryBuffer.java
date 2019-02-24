@@ -30,8 +30,6 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
 
     private int timer = 0;
 
-    private int last = 0;
-
     public EnergyContainerBatteryBuffer(MetaTileEntity metaTileEntity, int tier) {
         super(metaTileEntity);
         this.tier = tier;
@@ -52,22 +50,6 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
                 return Math.min(amperage, getInputAmperage());
             }
             IItemHandlerModifiable inventory = getInventory();
-//            boolean full = true;
-//            int inventorySize = inventory.getSlots();
-//            int count = 0;
-//            while (amperage != 0) {
-//                if (count)
-//                ItemStack batteryStack = inventory.getStackInSlot(last);
-//                IElectricItem electricItem = getBatteryContainer(batteryStack);
-//                if (electricItem == null) continue;
-//                if(electricItem.charge(voltage << GTValues.RF, getTier(), true, true) == voltage << GTValues.RF) {
-//                    electricItem.charge(voltage << GTValues.RF, getTier(), true, false);
-//                    inventory.setStackInSlot(last, batteryStack);
-//                    full = false;
-//                }
-//                last = (last + 1) % inventorySize;
-//                count ++;
-//            }
             for (int i = 0; i < inventory.getSlots(); i++) {
                 ItemStack batteryStack = inventory.getStackInSlot(i);
                 IElectricItem electricItem = getBatteryContainer(batteryStack);
