@@ -54,8 +54,8 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
                 ItemStack batteryStack = inventory.getStackInSlot(i);
                 IElectricItem electricItem = getBatteryContainer(batteryStack);
                 if (electricItem == null) continue;
-                if(electricItem.charge(voltage << GTValues.RF, getTier(), true, true) == voltage << GTValues.RF) {
-                    electricItem.charge(voltage << GTValues.RF, getTier(), true, false);
+                if(electricItem.charge(voltage << ConfigHolder.RF, getTier(), true, true) == voltage << ConfigHolder.RF) {
+                    electricItem.charge(voltage << ConfigHolder.RF, getTier(), true, false);
                     inventory.setStackInSlot(i, batteryStack);
                     if(--amperage == 0) break;
                 }
@@ -67,8 +67,8 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
     @Override
     public void update() {
         if(!metaTileEntity.getWorld().isRemote) {
-            // every (1 << GTValues.RF) tick emit (1 << GTValues.RF) unit energyS
-            if (((timer ++) & ((1 << GTValues.RF) - 1)) != 0) {
+            // every (1 << ConfigHolder.RF) tick emit (1 << ConfigHolder.RF) unit energyS
+            if (((timer ++) & ((1 << ConfigHolder.RF) - 1)) != 0) {
                 return ;
             }
             EnumFacing outFacing = metaTileEntity.getFrontFacing();
@@ -86,7 +86,7 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
                 ItemStack batteryStack = inventory.getStackInSlot(i);
                 IElectricItem electricItem = getBatteryContainer(batteryStack);
                 if (electricItem == null) continue;
-                if(electricItem.discharge(voltage << GTValues.RF, getTier(), true, true, true) == voltage << GTValues.RF) {
+                if(electricItem.discharge(voltage << ConfigHolder.RF, getTier(), true, true, true) == voltage << ConfigHolder.RF) {
                     validSlots[(int) maxAmperage] = i;
                     maxAmperage++;
                 }
@@ -99,7 +99,7 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
                 ItemStack batteryStack = inventory.getStackInSlot(i);
                 IElectricItem electricItem = getBatteryContainer(batteryStack);
                 if (electricItem == null) continue;
-                electricItem.discharge(voltage << GTValues.RF, getTier(), true, true, false);
+                electricItem.discharge(voltage << ConfigHolder.RF, getTier(), true, true, false);
                 inventory.setStackInSlot(i, batteryStack);
                 if(--amperageUsed == 0) break;
             }

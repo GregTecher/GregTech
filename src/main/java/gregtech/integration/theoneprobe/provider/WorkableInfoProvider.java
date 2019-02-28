@@ -35,6 +35,7 @@ public class WorkableInfoProvider extends CapabilityInfoProvider<IWorkable> {
                 .backgroundColor(0x00000000)
                 .filledColor(0xFF000099)
                 .alternateFilledColor(0xFF000077));
+            probeInfo.text(TextStyleClass.INFO.toString() + String.format("%.1fs / %.1fs", currentProgress / 20.0, maxProgress / 20.0));
         }
         if(!capability.isWorkingEnabled()) {
             probeInfo.text(TextStyleClass.INFOIMP + "{*gregtech.top.working_disabled*}");

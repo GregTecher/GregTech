@@ -116,6 +116,10 @@ public abstract class WorkableTieredMetaTileEntity extends TieredMetaTileEntity 
         return 16000;
     }
 
+    public EnergyRecipeMapWorkableHandler getWorkable() {
+        return workable;
+    }
+
     @Override
     public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, boolean advanced) {
         super.addInformation(stack, player, tooltip, advanced);

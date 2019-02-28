@@ -62,6 +62,10 @@ public class ConfigHolder {
     @Config.RequiresMcRestart
     public static VanillaRecipes vanillaRecipes = new VanillaRecipes();
 
+    @Config.Comment("Energy transfer rate. The eventually rate is 2^RF. Increasing this value helps to improve TPS")
+    @Config.RequiresMcRestart
+    public static int RF = 4;
+
     public static class VanillaRecipes {
 
         @Config.Comment("Whether to nerf paper crafting recipe. Default is true.")

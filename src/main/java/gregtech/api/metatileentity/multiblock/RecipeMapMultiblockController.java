@@ -155,4 +155,8 @@ public abstract class RecipeMapMultiblockController extends MultiblockWithDispla
         super.renderMetaTileEntity(renderState, translation, pipeline);
         Textures.MULTIBLOCK_WORKABLE_OVERLAY.render(renderState, translation, pipeline, getFrontFacing(), recipeMapWorkable.isActive());
     }
+
+    public MultiblockRecipeMapWorkable getRecipeMapWorkable() {
+        return recipeMapWorkable;
+    }
 }

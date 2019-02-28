@@ -69,6 +69,5 @@ public class GTValues {
             MODID_CT = "crafttweaker",
             MODID_TOP = "theoneprobe";
 
-    public static final int RF = 4;
 
 }
