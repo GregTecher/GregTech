@@ -1,6 +1,5 @@
 package gregtech.api.capability.impl;
 
-import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
 import gregtech.api.capability.IEnergyContainer;
@@ -85,6 +84,9 @@ public class EnergyContainerHandler extends MTETrait implements IEnergyContainer
     @Override
     public void deserializeNBT(NBTTagCompound compound) {
         this.energyStored = compound.getLong("EnergyStored");
+        if (energyStored > maxCapacity) {
+            this.energyStored = maxCapacity;
+        }
     }
 
     @Override

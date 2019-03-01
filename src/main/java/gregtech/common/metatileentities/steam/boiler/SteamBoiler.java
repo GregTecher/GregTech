@@ -201,7 +201,7 @@ public abstract class SteamBoiler extends MetaTileEntity {
                 getWorld().setBlockToAir(getPos());
                 getWorld().createExplosion(null,
                     getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5,
-                    2.0f, false);
+                    2.0f, true);
             } else this.hasNoWater = !hasDrainedWater;
             if (filledSteam == 0 && hasDrainedWater) {
                 //todo sound of steam pressure
