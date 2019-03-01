@@ -100,4 +100,8 @@ public abstract class TieredMetaTileEntity extends MetaTileEntity {
         String subName = lastIndexOfDot == -1 ? metaName : metaName.substring(0, lastIndexOfDot);
         return subName + ".tooltip";
     }
+
+    public IEnergyContainer getEnergyContainer() {
+        return energyContainer;
+    }
 }

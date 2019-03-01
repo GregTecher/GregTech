@@ -1,7 +1,5 @@
 package gregtech.api.capability.impl;
 
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
 import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
@@ -30,6 +28,16 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
 
     private int timer = 0;
 
+    /**
+     * actually amperage output
+     */
+    private long amperageOut;
+
+    /**
+     * actually max amperage can output
+     */
+    private long amperageMax;
+
     public EnergyContainerBatteryBuffer(MetaTileEntity metaTileEntity, int tier) {
         super(metaTileEntity);
         this.tier = tier;
@@ -38,7 +46,7 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
     @Override
     public long acceptEnergyFromNetwork(EnumFacing side, long voltage, long amperage) {
         long initialAmperage = amperage;
-        if(side == null || inputsEnergy(side)) {
+        if (side == null || inputsEnergy(side)) {
             if (voltage > getInputVoltage()) {
                 BlockPos pos = metaTileEntity.getPos();
                 metaTileEntity.getWorld().setBlockToAir(pos);
@@ -54,10 +62,10 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
                 ItemStack batteryStack = inventory.getStackInSlot(i);
                 IElectricItem electricItem = getBatteryContainer(batteryStack);
                 if (electricItem == null) continue;
-                if(electricItem.charge(voltage << ConfigHolder.RF, getTier(), true, true) == voltage << ConfigHolder.RF) {
+                if (electricItem.charge(voltage << ConfigHolder.RF, getTier(), true, true) == voltage << ConfigHolder.RF) {
                     electricItem.charge(voltage << ConfigHolder.RF, getTier(), true, false);
                     inventory.setStackInSlot(i, batteryStack);
-                    if(--amperage == 0) break;
+                    if (--amperage == 0) break;
                 }
             }
         }
@@ -66,18 +74,18 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
 
     @Override
     public void update() {
-        if(!metaTileEntity.getWorld().isRemote) {
+        if (!metaTileEntity.getWorld().isRemote) {
             // every (1 << ConfigHolder.RF) tick emit (1 << ConfigHolder.RF) unit energyS
-            if (((timer ++) & ((1 << ConfigHolder.RF) - 1)) != 0) {
-                return ;
+            if (((timer++) & ((1 << ConfigHolder.RF) - 1)) != 0) {
+                return;
             }
             EnumFacing outFacing = metaTileEntity.getFrontFacing();
             TileEntity tileEntity = metaTileEntity.getWorld().getTileEntity
                 (metaTileEntity.getPos().offset(outFacing));
-            if(tileEntity == null) return;
+            if (tileEntity == null) return;
             IEnergyContainer energyContainer = tileEntity.getCapability(
                 GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, outFacing.getOpposite());
-            if(energyContainer == null) return;
+            if (energyContainer == null) return;
             IItemHandlerModifiable inventory = getInventory();
             long voltage = getOutputVoltage();
             long maxAmperage = 0L;
@@ -86,14 +94,19 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
                 ItemStack batteryStack = inventory.getStackInSlot(i);
                 IElectricItem electricItem = getBatteryContainer(batteryStack);
                 if (electricItem == null) continue;
-                if(electricItem.discharge(voltage << ConfigHolder.RF, getTier(), true, true, true) == voltage << ConfigHolder.RF) {
+                if (electricItem.discharge(voltage << ConfigHolder.RF, getTier(), true, true, true) == voltage << ConfigHolder.RF) {
                     validSlots[(int) maxAmperage] = i;
                     maxAmperage++;
                 }
             }
-            if(maxAmperage == 0) return;
+            amperageMax = maxAmperage;
+            if (maxAmperage == 0) {
+                amperageOut = 0;
+                return;
+            }
             long amperageUsed = energyContainer.acceptEnergyFromNetwork(outFacing.getOpposite(), voltage, maxAmperage);
-            if(amperageUsed == 0) return;
+            amperageOut = amperageUsed;
+            if (amperageUsed == 0) return;
             for (int k = 0; k < maxAmperage; k++) {
                 int i = validSlots[k];
                 ItemStack batteryStack = inventory.getStackInSlot(i);
@@ -101,7 +114,7 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
                 if (electricItem == null) continue;
                 electricItem.discharge(voltage << ConfigHolder.RF, getTier(), true, true, false);
                 inventory.setStackInSlot(i, batteryStack);
-                if(--amperageUsed == 0) break;
+                if (--amperageUsed == 0) break;
             }
         }
     }
@@ -109,7 +122,7 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
     private List<IElectricItem> getElectricItems() {
         List<IElectricItem> electricItems = new ArrayList<>();
         IItemHandlerModifiable inventory = getInventory();
-        for(int i = 0; i < inventory.getSlots(); i++) {
+        for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack batteryStack = inventory.getStackInSlot(i);
             IElectricItem electricItem = getBatteryContainer(batteryStack);
             if (electricItem != null) electricItems.add(electricItem);
@@ -220,5 +233,13 @@ public class EnergyContainerBatteryBuffer extends MTETrait implements IEnergyCon
 
     protected int getTier() {
         return tier;
+    }
+
+    public long getAmperageOut() {
+        return amperageOut;
+    }
+
+    public long getAmperageMax() {
+        return amperageMax;
     }
 }

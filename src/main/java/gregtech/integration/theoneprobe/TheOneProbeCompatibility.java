@@ -1,8 +1,6 @@
 package gregtech.integration.theoneprobe;
 
-import gregtech.integration.theoneprobe.provider.ElectricContainerInfoProvider;
-import gregtech.integration.theoneprobe.provider.ElectricMachineInfoProvider;
-import gregtech.integration.theoneprobe.provider.WorkableInfoProvider;
+import gregtech.integration.theoneprobe.provider.*;
 import mcjty.theoneprobe.TheOneProbe;
 import mcjty.theoneprobe.api.ITheOneProbe;
 
@@ -12,7 +10,10 @@ public class TheOneProbeCompatibility {
         ITheOneProbe oneProbe = TheOneProbe.theOneProbeImp;
         oneProbe.registerProvider(new ElectricContainerInfoProvider());
         oneProbe.registerProvider(new WorkableInfoProvider());
-        oneProbe.registerProvider(new ElectricMachineInfoProvider());
+//        oneProbe.registerProvider(new ElectricMachineInfoProvider());
+        oneProbe.registerProvider(new BatteryBufferInfoProvider());
+        oneProbe.registerProvider(new MultiWorkableInfoProvider());
+        oneProbe.registerProvider(new TieredWorkableInfoProvider());
     }
 
 }

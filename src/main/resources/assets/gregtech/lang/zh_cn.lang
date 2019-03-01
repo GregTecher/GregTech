@@ -9,6 +9,7 @@ death.attack.heat.player=%s被%s煮熟了.
 death.attack.crusher=%s被碾死了.
 
 gregtech.top.energy_stored=储存能量:
+gregtech.top.amperage=电流:
 gregtech.top.progress=进度:
 gregtech.top.working_disabled=机器停止运转
 

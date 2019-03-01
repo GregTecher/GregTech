@@ -9,6 +9,7 @@ death.attack.heat.player=%s was boiled alive by %s.
 death.attack.crusher=%s was grinded dead.
 
 gregtech.top.energy_stored=Energy:
+gregtech.top.amperage=Amperage:
 gregtech.top.progress=Progress:
 gregtech.top.working_disabled=Working Disabled
 
