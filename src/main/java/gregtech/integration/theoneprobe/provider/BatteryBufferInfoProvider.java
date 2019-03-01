@@ -18,7 +18,7 @@ public class BatteryBufferInfoProvider extends MetaTileEntityHolderInfoProvider<
         IProbeInfo horizontalPane = probeInfo.horizontal(probeInfo.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
         horizontalPane.text(TextStyleClass.INFO + "{*gregtech.top.amperage*} ");
         horizontalPane.progress(container.getAmperageOut(), container.getAmperageMax(), probeInfo.defaultProgressStyle()
-            .suffix("/ " + container.getAmperageMax() + " A")
+            .suffix(" / " + container.getAmperageMax() + " A")
             .borderColor(0x00000000)
             .backgroundColor(0x00000000)
             .filledColor(0xFFFFE000)
